@@ -9,7 +9,6 @@ ONE_MPH = 0.44704
 
 class Controller(object):
     def __init__(self, vehicle_mass, fuel_capacity, brake_deadband, decel_limit, accel_limit, wheel_radius, wheel_base, steer_ratio, max_lat_accel, max_steer_angle):
-        
         # TODO: Implement
         self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
 
@@ -63,7 +62,7 @@ class Controller(object):
 
         if linear_vel == 0. and current_vel < 0.1:
             throttle = 0
-            brake = 400 # N*m - to hold the car in place if we are stopped at a light. Acceleration - 1m/s^2
+            brake = 700 # N*m - to hold the car in place if we are stopped at a light. Acceleration - 1m/s^2
 
         elif throttle < .1 and vel_error < 0:
             throttle = 0
