@@ -3,33 +3,51 @@ import os
 import tensorflow as tf
 import numpy as np
 import rospy
+from graph_utils import load_graph
 
 class TLClassifier(object):
     def __init__(self):
         #TODO load classifier
         
-        current_dir = os.path.dirname(os.path.realpath(__file__))
+        #current_dir = os.path.dirname(os.path.realpath(__file__))
         
-        #if sim:
-            model = current_dir + '/Trained_Models/simulation_model.pb'
-        #else:
-            #model = current_dir + '/Trained_Models/real_model.pb'
-        # end of if sim
+        ##if sim:
+            #model = current_dir + '/Trained_Models/simulation_model.pb'
+        ##else:
+            ##model = current_dir + '/Trained_Models/real_model.pb'
+        ## end of if sim
   
-        self.detection_graph = tf.Graph()
+        #self.detection_graph = tf.Graph()
     
-        with self.detection_graph.as_default():
+        #with self.detection_graph.as_default():
     
-            od_graph_def = tf.GraphDef()
+            #od_graph_def = tf.GraphDef()
     
-            with tf.gfile.GFile(model, 'rb') as fid:
+            #with tf.gfile.GFile(model, 'rb') as fid:
     
-                serialized_graph = fid.read()
-                od_graph_def.ParseFromString(serialized_graph)
-                tf.import_graph_def(od_graph_def, name='')
+                #serialized_graph = fid.read()
+                #od_graph_def.ParseFromString(serialized_graph)
+                #tf.import_graph_def(od_graph_def, name='')
 
-        self.session = tf.Session(graph=self.detection_graph)
+        #self.session = tf.Session(graph=self.detection_graph)
     
+        #self.image_tensor = self.detection_graph.get_tensor_by_name('image_tensor:0')
+        #self.detection_boxes = self.detection_graph.get_tensor_by_name('detection_boxes:0')
+        #self.detection_scores = self.detection_graph.get_tensor_by_name('detection_scores:0')
+        #self.detection_classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
+        #self.num_detections = self.detection_graph.get_tensor_by_name('num_detections:0')
+        
+        sess = None
+
+        #if is_site:
+        sess, _ = load_graph('Trained_Models/simulation_model.pb')
+        #else:
+            #sess, _ = load_graph('models/sim_model.pb')
+
+        self.sess = sess
+        self.detection_graph = self.sess.graph
+        
+        # Definite input and output Tensors for sess
         self.image_tensor = self.detection_graph.get_tensor_by_name('image_tensor:0')
         self.detection_boxes = self.detection_graph.get_tensor_by_name('detection_boxes:0')
         self.detection_scores = self.detection_graph.get_tensor_by_name('detection_scores:0')
