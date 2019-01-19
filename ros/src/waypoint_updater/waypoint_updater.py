@@ -32,9 +32,9 @@ class WaypointUpdater(object):
         rospy.init_node('waypoint_updater')
 
         # TODO [DONE]: Add other member variables you need below
+        self.pose = None
         self.base_lane = None
         self.base_waypoints = None
-        self.pose = None
         self.stopline_wp_idx = -1
         self.waypoints_2d = None
         self.waypoint_tree = None
@@ -48,9 +48,9 @@ class WaypointUpdater(object):
         self.loop()
         
     def loop(self):
-        rate = rospy.Rate(50)
+        rate = rospy.Rate(20)
         while not rospy.is_shutdown():
-            if self.pose and self.base_waypoints and self.waypoint_tree:
+            if self.pose:
                 self.publish_waypoints()
             rate.sleep()
 
@@ -72,10 +72,10 @@ class WaypointUpdater(object):
 
         if val > 0:
             closest_idx = (closest_idx + 1) % len(self.waypoints_2d)
-
         return closest_idx
 
     def publish_waypoints(self):
+        
         # lane = Lane()
         # lane.header = self.base_waypoints.header
         # lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
@@ -84,8 +84,8 @@ class WaypointUpdater(object):
         final_lane = self.generate_lane()
         self.final_waypoints_pub.publish(final_lane)
 
-
     def generate_lane(self):
+        
         lane = Lane()
 
         closest_idx = self.get_closest_waypoint_idx()
@@ -100,7 +100,9 @@ class WaypointUpdater(object):
         return lane
 
     def decelerate_waypoints(self, waypoints, closest_idx):
+        
         temp = []
+        
         for i, wp in enumerate(waypoints):
             p = Waypoint()
             p.pose = wp.pose
@@ -108,6 +110,7 @@ class WaypointUpdater(object):
             stop_idx = max(self.stopline_wp_idx - closest_idx -2, 0) # Two waypoints back from line so front of car at line
             dist = self.distance(waypoints, i, stop_idx)
             vel = math.sqrt(2 * MAX_DECEL * dist)
+            
             if vel < 1.:
                 vel = 0.
 
@@ -120,6 +123,7 @@ class WaypointUpdater(object):
         self.pose = msg
 
     def waypoints_cb(self, waypoints):
+        
         self.base_lane = waypoints
         if not self.waypoints_2d:
             self.waypoints_2d = [[waypoint.pose.pose.position.x , waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
