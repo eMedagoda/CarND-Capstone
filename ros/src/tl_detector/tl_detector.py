@@ -43,7 +43,7 @@ class TLDetector(object):
         config_string = rospy.get_param("/traffic_light_config")
         self.config = yaml.load(config_string)
         self.is_site = self.config["is_site"]
-        self.light_classifier = TLClassifier(self.is_site)
+        self.light_classifier = TLClassifier()
 
 
         sub1 = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
@@ -148,14 +148,14 @@ class TLDetector(object):
         #    self.prev_light_loc = None
         #    return False
 
-        cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
+        #cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
 
 
         #Get classification
-        return self.light_classifier.get_classification(cv_image)
+        #return self.light_classifier.get_classification(cv_image)
 
         # for testing we return the light state from the simulator
-        #return light.state
+        return light.state
 
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
