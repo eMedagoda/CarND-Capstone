@@ -13,6 +13,7 @@ import yaml
 from scipy.spatial import KDTree
 
 STATE_COUNT_THRESHOLD = 2
+TL_DETECTION_DISTANCE = 120 # number of waypoints before the next traffic light where traffic light is enabled
 
 class TLDetector(object):
     def __init__(self):
@@ -181,7 +182,8 @@ class TLDetector(object):
             if not car_wp_idx:
                return -1, TrafficLight.UNKNOWN
 
-            diff = len(self.waypoints.waypoints)
+
+            diff = min(len(self.waypoints.waypoints), TL_DETECTION_DISTANCE)
             for i, light in enumerate(self.lights):
                 # Get stop line waypoint index
                 line = stop_line_positions[i]
