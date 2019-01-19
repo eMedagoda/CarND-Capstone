@@ -31,12 +31,6 @@ class WaypointUpdater(object):
     def __init__(self):
         rospy.init_node('waypoint_updater')
 
-        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
-        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
-        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
-        
-        self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
-        
         # TODO [DONE]: Add other member variables you need below
         self.base_lane = None
         self.base_waypoints = None
@@ -44,13 +38,19 @@ class WaypointUpdater(object):
         self.stopline_wp_idx = -1
         self.waypoints_2d = None
         self.waypoint_tree = None
+
+        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
+        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
+        
+        self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
         
         self.loop()
         
     def loop(self):
         rate = rospy.Rate(50)
         while not rospy.is_shutdown():
-            if self.pose and self.base_waypoints:
+            if self.pose and self.base_waypoints and self.waypoint_tree:
                 self.publish_waypoints()
             rate.sleep()
 
@@ -72,10 +72,10 @@ class WaypointUpdater(object):
 
         if val > 0:
             closest_idx = (closest_idx + 1) % len(self.waypoints_2d)
+
         return closest_idx
 
     def publish_waypoints(self):
-        
         # lane = Lane()
         # lane.header = self.base_waypoints.header
         # lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
@@ -108,7 +108,6 @@ class WaypointUpdater(object):
             stop_idx = max(self.stopline_wp_idx - closest_idx -2, 0) # Two waypoints back from line so front of car at line
             dist = self.distance(waypoints, i, stop_idx)
             vel = math.sqrt(2 * MAX_DECEL * dist)
-            
             if vel < 1.:
                 vel = 0.
 

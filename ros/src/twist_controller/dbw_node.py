@@ -53,6 +53,15 @@ class DBWNode(object):
         self.brake_pub = rospy.Publisher('/vehicle/brake_cmd',
                                          BrakeCmd, queue_size=1)
 
+        self.current_vel = None
+        self.curr_ang_vel = None
+        self.dbw_enabled = None
+        self.linear_vel = None
+        self.angular_vel = None
+        self.throttle = 0
+        self.steering = 0
+        self.brake = 0
+
         # TODO: Create `Controller` object
         # self.controller = Controller(<Arguments you wish to provide>)
         self.controller = Controller(vehicle_mass = vehicle_mass,
@@ -70,13 +79,6 @@ class DBWNode(object):
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.twist_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.velocity_cb)
-        
-        self.current_vel = None
-        self.curr_ang_vel = None
-        self.dbw_enabled = None
-        self.linear_vel = None
-        self.angular_vel = None
-        self.throttle = self.steering = self.brake = 0
 
         self.loop()
 
@@ -94,10 +96,9 @@ class DBWNode(object):
             #   self.publish(throttle, brake, steer)
             
             if not None in (self.current_vel, self.linear_vel, self.angular_vel):
-                self.throttle, self.brake, self.steering = self.controller.control(self.current_vel,
-                                                                                   self.dbw_enabled,
-                                                                                   self.linear_vel,
-                                                                                   self.angular_vel)
+                self.throttle, self.brake, self.steering = self.controller.control(self.current_vel, self.dbw_enabled, self.linear_vel, self.angular_vel)
+            # if <dbw is enabled>:
+            #   self.publish(throttle, brake, steer)
             if self.dbw_enabled:
                 self.publish(self.throttle, self.brake, self.steering)
             rate.sleep()

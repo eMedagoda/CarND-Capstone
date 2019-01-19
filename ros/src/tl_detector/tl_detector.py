@@ -13,6 +13,8 @@ import yaml
 from scipy.spatial import KDTree
 
 STATE_COUNT_THRESHOLD = 2
+TL_DETECTION_DISTANCE = 120 # number of waypoints before the next traffic light where traffic light is enabled
+SAVE_TRAFFIC_LIGHT_IMG = False # Save traffic images to train classifier model.
 
 class TLDetector(object):
     def __init__(self):
