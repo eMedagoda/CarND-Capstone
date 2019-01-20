@@ -4,17 +4,17 @@ import tensorflow as tf
 import numpy as np
 import rospy
 
-class TLClassifier(object):
+class TLClassifier(object, simulation):
     def __init__(self):
-        #TODO load classifier
         
+        # look in current path
         current_dir = os.path.dirname(os.path.realpath(__file__))
         
-        #if sim:
-        model = current_dir + '/Trained_Models/frozen_inference_graph.pb'
-        #else:
-            #model = current_dir + '/Trained_Models/real_model.pb'
-        # end of if sim
+        # load model depending on whether running simulated or real data
+        if simulation:
+            model = current_dir + '/Trained_Models/sim_frozen_inference_graph.pb'
+        else:
+            model = current_dir + '/Trained_Models/real_frozen_inference_graph.pb'
   
         self.detection_graph = tf.Graph()
     
@@ -28,8 +28,8 @@ class TLClassifier(object):
                 od_graph_def.ParseFromString(serialized_graph)
                 tf.import_graph_def(od_graph_def, name='')
 
-        self.session = tf.Session(graph=self.detection_graph)
-    
+        # initialise model parameters
+        self.session = tf.Session(graph=self.detection_graph)       
         self.image_tensor = self.detection_graph.get_tensor_by_name('image_tensor:0')
         self.detection_boxes = self.detection_graph.get_tensor_by_name('detection_boxes:0')
         self.detection_scores = self.detection_graph.get_tensor_by_name('detection_scores:0')
@@ -50,6 +50,7 @@ class TLClassifier(object):
         
         image_expanded = np.expand_dims(image, axis=0)
         
+        # run trained classifier over image
         (boxes, scores, classes, num) = self.session.run([self.detection_boxes, 
                                                               self.detection_scores, 
                                                               self.detection_classes, 
@@ -60,13 +61,12 @@ class TLClassifier(object):
         classes = np.squeeze(classes).astype(np.int32)
         scores = np.squeeze(scores)
     
-        # Print class based on best score    
+        # identify class with the highest score    
         light_color = TrafficLight.UNKNOWN
-    
-        # find index with the max score[index]
         max_score = scores[0]
         max_index = 0
         
+        # determine index of most likely class
         for i in range(1, boxes.shape[0]):
             if max_score < scores[i]:
                 max_score = scores[i]
@@ -80,10 +80,8 @@ class TLClassifier(object):
         elif classes[max_index] == 3:
             light_color = TrafficLight.YELLOW
     
-        # if not sure of the light colour
-        if max_score < 0.5: # used to be 0.7
-            light_color = TrafficLight.UNKNOWN # return as unknown
+        # if the light colour is ambiguous
+        if max_score < 0.5:
+            light_color = TrafficLight.UNKNOWN # set light colour as unknown (possibly set as red, safer to stop)
 
-        return light_color
-        
-        #return TrafficLight.UNKNOWN
+        return light_color        
