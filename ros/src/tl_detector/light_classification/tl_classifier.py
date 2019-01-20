@@ -4,8 +4,8 @@ import tensorflow as tf
 import numpy as np
 import rospy
 
-class TLClassifier(object, simulation):
-    def __init__(self):
+class TLClassifier(object):
+    def __init__(self, simulation):
         
         # look in current path
         current_dir = os.path.dirname(os.path.realpath(__file__))
