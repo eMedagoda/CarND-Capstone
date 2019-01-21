@@ -181,7 +181,7 @@ class TLDetector(object):
             #if not car_wp_idx:
                #return -1, TrafficLight.UNKNOWN
 
-            diff = min(50, len(self.waypoints.waypoints))
+            diff = min(100, len(self.waypoints.waypoints))
             for i, light in enumerate(self.lights):
 
                 line = stop_line_positions[i]

@@ -5,16 +5,16 @@ import numpy as np
 import rospy
 
 class TLClassifier(object):
-    def __init__(self, simulation):
+    def __init__(self, site):
         
         # look in current path
         current_dir = os.path.dirname(os.path.realpath(__file__))
         
         # load model depending on whether running simulated or real data
-        if simulation:
-            model = current_dir + '/Trained_Models/sim_frozen_inference_graph.pb'
-        else:
+        if site:
             model = current_dir + '/Trained_Models/real_frozen_inference_graph.pb'
+        else:
+            model = current_dir + '/Trained_Models/sim_frozen_inference_graph.pb'
   
         self.detection_graph = tf.Graph()
     
