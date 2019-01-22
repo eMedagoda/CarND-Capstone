@@ -58,7 +58,7 @@ class TLDetector(object):
         self.loop()
 
     def loop(self):
-        rate = rospy.Rate(5)
+        rate = rospy.Rate(5) # run traffic light detector at low rate 5Hz (minimise latency issues)
         while not rospy.is_shutdown():
             self.traffic_light_search()
             rate.sleep()

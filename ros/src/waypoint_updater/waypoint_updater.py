@@ -48,7 +48,7 @@ class WaypointUpdater(object):
         self.loop()
         
     def loop(self):
-        rate = rospy.Rate(10) # run waypoint update at 10Hz
+        rate = rospy.Rate(10) # run waypoint update at 10Hz (minimise latency issues)
         while not rospy.is_shutdown():
             if self.pose and self.waypoint_tree:
                 self.publish_waypoints()

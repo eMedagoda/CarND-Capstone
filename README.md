@@ -1,7 +1,14 @@
 This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car. For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/6047fe34-d93c-4f50-8336-b70ef10cb4b2/modules/e1a23b06-329a-4684-a717-ad476f0d8dff/lessons/462c933d-9f24-42d3-8bdc-a08a5fc866e4/concepts/5ab4b122-83e6-436d-850f-9f4d26627fd9).
 
 ## Team Members
-* Eran Medagoda: eran.medagoda@gmail.com (team lead)
+* Eran Medagoda: eran.medagoda@gmail.com
+
+## Modified Nodes
+* waypoint_updater: Updates the target velocity of each waypoint based on the state of the detected traffic lights. If a traffic light is detected RED, the decelerates according to a basic acceleration profile until it reaches the traffic line. If the waypoint is detected GREEN or YELLOW, the vehicle will drive through. The waypoint_updater was set to run at a reduced rate of 10Hz to manage latency issues during testing. 
+
+* twist_controller: Updates the throttle and steering commands sent to the vehicle depending on the current driving state. This node must run at 50Hz to provide high fidelity control commands to the vehicle.
+
+* tl_detector: Uses a trained traffic light classifier to detect traffic lights in an image and identify their current state. The classifier was trained by leveraging pre-trained classifiers for object detection in TensorFlow (some of which can be found [here](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md). The model used was the SSD Inception V2 Coco model. The reference used to implement this classifier can be found [here](https://github.com/coldKnight/TrafficLight_Detection-TensorFlowAPI). The detector itself was run af 5Hz to minimise latency issues. 
 
 ## Installation
 
